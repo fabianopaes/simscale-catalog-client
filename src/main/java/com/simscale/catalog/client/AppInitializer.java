@@ -1,14 +1,13 @@
 package com.simscale.catalog.client;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.simscale.catalog.client.circuitbreaker.CircuitBreakerCustom;
 import com.simscale.catalog.client.http.WSClientImpl;
+import com.simscale.catalog.client.loadbalance.JobFailureDummyHandler;
+import com.simscale.catalog.client.loadbalance.LoadBalanceAlgorithm;
+import com.simscale.catalog.client.loadbalance.LoadBalanceFactory;
+import com.simscale.catalog.client.loadbalance.LoadBalanceInfo;
 import io.netty.handler.codec.http.HttpMethod;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -25,20 +24,6 @@ public class AppInitializer {
                 new Server("http://localhost", 9001,  "Patient-Data"),
                 new Server("http://localhost",  9002, "Report")
         );
-
-        File file = new File("resources/servers.json");
-        System.out.println(file.exists());
-        System.out.println(file.getAbsolutePath());
-
-/*        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        File file = new File("resources/servers.json");
-        System.out.println(file.exists());
-        System.out.println(file.getAbsolutePath());
-        List<Server> servers = Arrays.asList(
-                objectMapper.readValue(file, Server[].class)
-        );*/
-
 
         // Here comes our jobs that we have to balance between our servers
         List<Job> jobs = Arrays.asList(
@@ -83,24 +68,18 @@ public class AppInitializer {
                 new Job("/v1/ping",HttpMethod.GET, null)
         );
 
-        ExecutionManager executionManager = new ExecutionManager(
-                new ArrayDeque<>(servers),
-                jobs,
-                new WSClientImpl()
-        );
 
-/*        int index = 1;
-        while(index <= 15){
-            executionManager.execute();
-            index++;
-            Thread.sleep(5 * 1000);
-        }
+       LoadBalanceInfo info = new LoadBalanceInfo(
+               new ArrayDeque<>(servers),
+               new WSClientImpl()
+       );
 
-        String string_json = FileUtils.readFileToString(new File("resources/insurance.json"));
-*/
+       ExecutionManager executionManager = new ExecutionManager(
+               LoadBalanceFactory.getInstance(LoadBalanceAlgorithm.ROUND_ROBIN, info),
+               new JobFailureDummyHandler()
+       );
 
-
-        executionManager.execute();
+        executionManager.run(jobs);
 
 
         System.exit(NumberUtils.INTEGER_ZERO);

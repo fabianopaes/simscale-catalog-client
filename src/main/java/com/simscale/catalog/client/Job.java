@@ -8,6 +8,7 @@ public class Job {
     private String endpoint;
     private HttpMethod method;
     private User user;
+    private int executionCount;
 
     public Job(String endpoint, HttpMethod method, User user) {
         this.endpoint = endpoint;
@@ -37,5 +38,27 @@ public class Job {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void increaseExecutionCount(){
+        this.executionCount++;
+    }
+
+    public int getExecutionCount() {
+        return executionCount;
+    }
+
+    public boolean isOverRetryLimit(){
+        return executionCount > 10;
+    }
+
+    @Override
+    public String toString() {
+        return "Job{" +
+                "endpoint='" + endpoint + '\'' +
+                ", method=" + method +
+                ", user=" + user +
+                ", executionCount=" + executionCount +
+                '}';
     }
 }

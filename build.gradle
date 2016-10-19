@@ -9,14 +9,16 @@ mainClassName = "com.simscale.catalog.client.AppInitializer"
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-//All variables that will be used to set the build up
-
-
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:deprecation"
+    }
+}
 
 dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
@@ -25,12 +27,11 @@ dependencies {
     compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.1.0-alpha1'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
-// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
 
 
-    /*compile group: 'org.json', name:'json', version: '20140107'*/
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.mockito', name: 'mockito-core', version: '2.2.5'
 
 }
 
@@ -43,6 +44,15 @@ sourceSets {
             srcDir 'resources'
         }
     }
+
+/*    test {
+        java {
+            srcDirs = ["src/test"]  // Note @Peter's comment below
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }*/
 }
 
 jar {
@@ -80,5 +90,17 @@ artifacts {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
+}
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+    reportsDir = file("$buildDir/reports/jacoco")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
