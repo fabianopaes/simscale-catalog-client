@@ -3,14 +3,14 @@ package com.simscale.catalog.client;
 import com.simscale.catalog.client.domain.User;
 import io.netty.handler.codec.http.HttpMethod;
 
-public class Job {
+public class JobRequest {
 
     private String endpoint;
     private HttpMethod method;
     private User user;
     private int executionCount;
 
-    public Job(String endpoint, HttpMethod method, User user) {
+    public JobRequest(String endpoint, HttpMethod method, User user) {
         this.endpoint = endpoint;
         this.method = method;
         this.user = user;
@@ -54,7 +54,7 @@ public class Job {
 
     @Override
     public String toString() {
-        return "Job{" +
+        return "JobRequest{" +
                 "endpoint='" + endpoint + '\'' +
                 ", method=" + method +
                 ", user=" + user +
