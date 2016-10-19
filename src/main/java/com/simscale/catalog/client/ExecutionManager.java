@@ -80,8 +80,8 @@ public class ExecutionManager {
         System.out.println(" Retry  count: " + reliableJobs.size());
         getServers().parallelStream().forEachOrdered(server -> {
             System.out.println("");
-            System.out.println("Server: " + server.getCircuitBreaker().getName());
-            System.out.println("Server: " + server.getCircuitBreaker().getSuccessCount());
+            System.out.println("Server: " + server.getName());
+            System.out.println("Server: " + server.getCircuitBreaker().getCircuitBreakerMetrics().getSuccessCount());
         });
 
         System.out.println("****************************************");
@@ -90,14 +90,14 @@ public class ExecutionManager {
 
     private void singleExecution(Server server, Job job){
         System.out.println("  " +
-                        server.getCircuitBreaker().getName() + "   " +
+                        server.getName() + "   " +
                         job.getMethod().name() + " -> "+
-                        server.getUrl() + job.getEndpoint()
+                        server.getEncondedUrl() + job.getEndpoint()
         );
 
         WSResponse response = client.doPerform(
                 job.getMethod().name(),
-                server.getUrl() + job.getEndpoint(),
+                server.getEncondedUrl() + job.getEndpoint(),
                 job.getUser()
         );
 

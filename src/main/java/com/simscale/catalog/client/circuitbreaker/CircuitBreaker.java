@@ -2,30 +2,20 @@ package com.simscale.catalog.client.circuitbreaker;
 
 public interface CircuitBreaker {
 
-    boolean isCallable();
+    public boolean isCallable();
 
-    void tripBreaker(int timeout);
+    public CircuitBreakerState getState();
 
-    void tripBreaker();
+    public boolean isClosed();
 
-    void reset();
+    public boolean isOpen();
 
-    boolean isClosed();
+    public boolean isHalfOpen();
 
-    boolean isOpen();
+    public void onSuccess();
 
-    boolean isHalfOpen();
+    public void onFailure();
 
-    void onSuccess();
-
-    int onFailure();
-
-    int onFailure(String type);
-
-    long getLastOpenTimestamp = 0;
-
-    String getName();
-
-    int getSuccessCount();
+    public CircuitBreakerMetrics getCircuitBreakerMetrics();
 
 }

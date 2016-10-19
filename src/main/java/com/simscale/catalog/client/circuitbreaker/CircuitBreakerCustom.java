@@ -1,192 +1,113 @@
 package com.simscale.catalog.client.circuitbreaker;
 
+import org.apache.commons.lang3.ObjectUtils;
 
 public class CircuitBreakerCustom implements CircuitBreaker {
 
-    private String name;
-
-    private int failureThreshold = 1;
-
-    private int retryInterval = 30000;
-
     private int failureCount;
 
-    private Status state;
+    private CircuitBreakerState state;
 
     private long lastOpenTimestamp = Long.MAX_VALUE;
 
-    private long attemptResetAfter = 1 * 60 * 1000;
+    private CircuitBreakerConfig config;
 
-    private int successCount;
-
-    public enum Status{
-
-        CLOSED,
-
-        OPEN,
-
-        HALF_OPEN
-
-    }
-
-    /*private Logger LOG = LoggerFactory.getLogger(CircuitBreakerCustom.class);*/
+    private CircuitBreakerMetrics metrics;
 
     public CircuitBreakerCustom() {
-        this.state = Status.CLOSED;
+        this.state = CircuitBreakerState.CLOSED;
+        this.config = new DefaultCircuitBreakerConfig();
+        this.metrics = new CircuitBreakerMetrics();
     }
 
-    public CircuitBreakerCustom(String name) {
-        this.state = Status.CLOSED;
-        this.name = name;
-    }
-
-    public CircuitBreakerCustom(String name, int failureThreshold, int timeout) {
+    public CircuitBreakerCustom(CircuitBreakerConfig config) {
         this();
-        this.name = name;
-        this.failureThreshold = failureThreshold;
-        this.retryInterval = timeout;
-
-    }
-
-    public CircuitBreakerCustom(int failureThreshold) {
-        this();
-        this.failureThreshold = failureThreshold;
-    }
-
-    public Status getState() {
-
-        if (Status.OPEN.equals(state) &&
-                System.currentTimeMillis() >= attemptResetAfter) {
-            state = Status.HALF_OPEN;
-        }
-        return state;
-    }
-
-    public int onFailure() {
-
-        if(isClosed()){
-            tripBreaker();
-            return increaseFailureCountAndGet();
-        }
-
-        if (isHalfOpen()) {
-            tripBreaker();
-        }
-
-        return getFailureCount();
-    }
-
-    void setState(Status state) {
-        Status priorState = this.state;
-        if (this.state.equals(state)) {
-            return;
-        }
-        this.state = state;
-    }
-
-    public void reset() {
-        setState(Status.CLOSED);
-        setFailureCount(0);
-    }
-
-    public void tripBreaker() {
-        tripBreaker(retryInterval);
-    }
-
-    public void tripBreaker(int timeout) {
-        lastOpenTimestamp = System.currentTimeMillis();
-        attemptResetAfter = lastOpenTimestamp + timeout;
-        setState(Status.OPEN);
-
-    }
-
-    public int getFailureCount() {
-        return failureCount;
-    }
-
-    public int getRetryInterval() {
-        return retryInterval;
-    }
-
-    public void setRetryInterval(int retryInterval) {
-        this.retryInterval = retryInterval;
+        this.config = config;
+        this.state = CircuitBreakerState.CLOSED;
+        this.metrics = new CircuitBreakerMetrics();
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-    public void onSuccess() {
-        if (!isClosed()) {
-            reset();
-            return;
-        }
-
-        if (isClosed() && failureCount > 0) {
-            setFailureCount(0);
-        }
-
-        increaseSuccessCounter();
-    }
-
-    public int onFailure(String type) {
-        return onFailure();
-    }
-
-
-    public boolean isClosed() {
-        return Status.CLOSED.equals(state);
-    }
-
-    public boolean isHalfOpen() {
-        return Status.HALF_OPEN.equals(getState());
-    }
-
-    public boolean isOpen() {
-        return Status.OPEN.equals(state);
-    }
-
     public boolean isCallable() {
         return isClosed() || isHalfOpen();
     }
 
-    public int getFailureThreshold() {
-        return failureThreshold;
-    }
+    public CircuitBreakerState getState() {
 
-    public long getLastOpenTimestamp() {
-        return lastOpenTimestamp;
+        if (ObjectUtils.equals(CircuitBreakerState.OPEN, state) && canBeClosed()){
+            state = CircuitBreakerState.HALF_OPEN;
+        }
+
+        return state;
     }
 
     @Override
-    public int getSuccessCount() {
-        return successCount;
+    public boolean isClosed() {
+        return ObjectUtils.equals(CircuitBreakerState.CLOSED, getState()) ;
     }
 
-    public void setSuccessCount(int successCount) {
-        this.successCount = successCount;
+    @Override
+    public boolean isHalfOpen() {
+        return ObjectUtils.equals(CircuitBreakerState.HALF_OPEN, getState()) ;
     }
 
-    public void increaseSuccessCounter(){
-        this.successCount ++;
+    @Override
+    public boolean isOpen() {
+        return ObjectUtils.equals(CircuitBreakerState.OPEN, getState()) ;
+    }
+
+    @Override
+    public void onSuccess() {
+
+        //It could be in half open state
+        if (!isClosed()) {
+            close();
+        }
+
+        metrics.increaseSuccessCount();
+    }
+
+    @Override
+    public void onFailure() {
+        increaseFailureCount();
+        if(ObjectUtils.equals(failureCount, config.getFailureThreshold())){
+            this.open();
+        }
+    }
+
+    @Override
+    public CircuitBreakerMetrics getCircuitBreakerMetrics() {
+        return this.metrics;
+    }
+
+    private void close(){
+        setState(CircuitBreakerState.CLOSED);
+        setFailureCount(0);
+    }
+
+
+    private void open(){
+        setState(CircuitBreakerState.OPEN);
+        metrics.increaseFailureCount();
+        lastOpenTimestamp = System.currentTimeMillis();
+    }
+
+    private void setState(CircuitBreakerState state){
+        this.state = state;
     }
 
     public void setFailureCount(int failureCount) {
         this.failureCount = failureCount;
     }
 
-    private int increaseFailureCountAndGet(){
-        increaseFailureCount();
-        return getFailureCount();
-    }
-
     private void increaseFailureCount(){
         this.failureCount++;
     }
+
+    private boolean canBeClosed(){
+        Long now = System.currentTimeMillis();
+        System.out.println("Diff: " + String.valueOf(now  - lastOpenTimestamp) + " config to halfopen: " + config.getTimeToAllowRequests());
+        return now  - lastOpenTimestamp >= config.getTimeToAllowRequests();
+    }
+
 }

@@ -12,7 +12,7 @@ public class RoundRobin implements LoadBalance{
 
         System.out.println("Server's snapshot");
         for(Server server : servers){
-            System.out.println(server.getCircuitBreaker().getName() + " " +
+            System.out.println(server.getName() + " " +
             server.getCircuitBreaker().isCallable());
         }
 
@@ -23,7 +23,7 @@ public class RoundRobin implements LoadBalance{
 
         if(server.isPresent()){
             servers.remove(server.get());
-            System.out.println("Choice server " + server.get().getCircuitBreaker().getName());
+            System.out.println("Choice server " + server.get().getName());
             return server;
         }
 

@@ -5,12 +5,15 @@ public class WSResponse {
     private String content;
     private int code;
 
-
     public WSResponse(){}
 
     public WSResponse(String content, int code) {
         this.content = content;
         this.code = code;
+    }
+
+    public static WSResponse empty(){
+        return new WSResponse();
     }
 
     public String getContent() {

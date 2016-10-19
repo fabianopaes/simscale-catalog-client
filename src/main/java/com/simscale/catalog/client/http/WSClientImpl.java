@@ -14,6 +14,15 @@ import java.util.concurrent.TimeoutException;
 
 public class WSClientImpl implements WSClient{
 
+    private final AsyncHttpClient asyncHttpClient;
+
+    public WSClientImpl() {
+        this.asyncHttpClient = new DefaultAsyncHttpClient(
+                WSHttpClientConfig.CONNECTION_POOL_PER_HOST
+        );
+    }
+
+
     @Override
     public WSResponse doPerform(String type, String url, User user) {
 
@@ -27,7 +36,7 @@ public class WSClientImpl implements WSClient{
             return doDelete(url);
         }
 
-        throw new RuntimeException("");
+        return WSResponse.empty();
     }
 
     @Override
@@ -62,15 +71,13 @@ public class WSClientImpl implements WSClient{
             wsResponse.setCode(response.getStatusCode());
             wsResponse.setContent(response.getResponseBody());
         }catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            System.out.println("Tá dando ruim");
         }
         return wsResponse;
     }
 
 
     private BoundRequestBuilder doPrepare (String type, String url){
-
-        AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
 
         if (ObjectUtils.equals("GET", type)) {
             return asyncHttpClient.prepareGet(url);
