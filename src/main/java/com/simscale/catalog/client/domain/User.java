@@ -1,15 +1,10 @@
 package com.simscale.catalog.client.domain;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 public class User {
 
     private Long id;
-
     private String username;
-
     private String firstName;
-
     private String lastName;
 
     public User(){}
