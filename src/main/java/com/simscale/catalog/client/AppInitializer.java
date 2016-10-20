@@ -1,6 +1,5 @@
 package com.simscale.catalog.client;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simscale.catalog.client.domain.JobRequest;
 import com.simscale.catalog.client.domain.Server;
@@ -22,11 +21,6 @@ public class AppInitializer {
 
     public static void main(String[] args) {
 
-        args = new String[]{
-                "/home/fabiano/src/simscale/simscale-catalog-client/servers.json",
-                "/home/fabiano/src/simscale/simscale-catalog-client/requests.json"
-        };
-
         if(args.length == 0){
             System.out.println("You have to provider at least the servers config path and as a plus the requests " +
                     "config that we will make");
@@ -44,7 +38,7 @@ public class AppInitializer {
                 System.exit(1);
         }
 
-        ObjectMapper mapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        ObjectMapper mapper = new ObjectMapper();
         List<Server> servers = new ArrayList<>();
         try{
             servers = Arrays.asList(mapper.readValue(serversConfig, Server[].class));
@@ -84,13 +78,14 @@ public class AppInitializer {
                 new WSClientImpl()
         );
 
-        System.exit(1);
         ExecutionManager executionManager = new ExecutionManagerImpl(
                 LoadBalanceFactory.getInstance(LoadBalanceAlgorithm.ROUND_ROBIN, info),
                 new JobFailureDummyHandler(), 1
         );
 
         executionManager.run(jobRequests);
+
+        executionManager.prettyPrintResults();
     }
 
 }

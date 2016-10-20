@@ -5,6 +5,7 @@ import com.simscale.catalog.client.helper.JobRequestGenerator;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings("unchecked")
@@ -48,6 +49,11 @@ public class WSClientTest {
     @Test
     public void whenPerformGetSuccessfullyReturnAValidWSResponse(){
 
+    }
+
+    @Test
+    public void replaceIdInUrl(){
+        assertEquals(url + "1", client.encodedUrl(url + "{id}", 1L));
     }
 
 }

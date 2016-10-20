@@ -31,5 +31,6 @@ chmod +x gradlew
 Other way to run this project is just execute a jar after build the project. Use the follow command:
 
 ```
-java -jar build/libs/simscale-catalog-client-1.0.0.jar
+java -jar build/libs/simscale-catalog-client-1.0.0.jar /path/to/your/servers/configuration/file.json /path/to/your/requests/configuration/file.json
 ```
+

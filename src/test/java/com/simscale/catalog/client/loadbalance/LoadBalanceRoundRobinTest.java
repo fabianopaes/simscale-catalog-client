@@ -242,8 +242,6 @@ public class LoadBalanceRoundRobinTest {
             assertEquals(WSResponse.empty().getCode(), loadBalance.execute(request).getCode());
             assertEquals(WSResponse.empty().getContent(), loadBalance.execute(request).getContent());
         });
-
-
     }
 
     private void verifyServerRelocate(Deque<Server> servers, Server shouldBeFirst, Server shouldBeLast){
