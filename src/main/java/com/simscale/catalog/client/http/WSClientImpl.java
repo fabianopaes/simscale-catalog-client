@@ -2,6 +2,7 @@ package com.simscale.catalog.client.http;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
 import com.simscale.catalog.client.domain.User;
 import org.apache.commons.lang3.ObjectUtils;
 import org.asynchttpclient.AsyncHttpClient;
@@ -110,7 +111,8 @@ public class WSClientImpl implements WSClient{
             return asyncHttpClient.prepareDelete(url);
         }
 
-        throw new RuntimeException("");
+        throw new RuntimeException("We only support the follow http status code:  " +
+                Joiner.on(",").join(HttpMethod.values()));
    }
 
     public String encodedUrl(String url, Long id){

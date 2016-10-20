@@ -47,7 +47,7 @@ public class JobRequestGenerator {
         return buildRequest(index, HttpMethod.DELETE, endpoint);
     }
 
-    private static List<JobRequest> buildRequest(int index, HttpMethod method, String endpoint){
+    public static List<JobRequest> buildRequest(int index, HttpMethod method, String endpoint){
 
         List<JobRequest> jobRequests = new ArrayList<>();
         for(int i = 1; i <= index; i++){
@@ -60,15 +60,15 @@ public class JobRequestGenerator {
 
     }
 
-    private static User userBuildWithId(int index){
+    public static User userBuildWithId(int index){
         return new User(new Long(index), "username-" + index, "firstname-" + index, "lastname-" + index );
     }
 
-    private static User userBuildWithNoId(int index){
+    public static User userBuildWithNoId(int index){
         return new User("username-" + index, "firstname-" + index, "lastname-" + index );
     }
 
-    private static User getUserInstance(HttpMethod method, int id){
+    public static User getUserInstance(HttpMethod method, int id){
         if(ObjectUtils.equals(method, HttpMethod.POST)){
             return userBuildWithNoId(id);
         }

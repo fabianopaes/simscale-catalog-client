@@ -1,99 +1,53 @@
 package com.simscale.catalog.client.http;
 
+import com.simscale.catalog.client.domain.User;
+import com.simscale.catalog.client.helper.JobRequestGenerator;
 import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertNotNull;
 
+@SuppressWarnings("unchecked")
 public class WSClientTest {
 
     private WSClientImpl client;
     private String url = "http://localhost:8080/v1/users/";
+    private User user;
 
     @Before
     public void initialize() {
         client = new WSClientImpl();
+        user = JobRequestGenerator.userBuildWithId(1);
     }
+
+    @Test(expected=RuntimeException.class)
+    public void whenAnUnsupportedHttpMethodTriesToGetRequestBuilderThrowException (){
+        client.doPrepare(null, url);
+    }
+
+    @Test
+    public void returnARequestBuilderInstanceForGet(){
+        assertNotNull(client.doPrepare(HttpMethod.GET, url));
+    }
+
+    @Test
+    public void returnARequestBuilderInstanceForPost(){
+        assertNotNull(client.doPrepare(HttpMethod.POST, url));
+    }
+
+    @Test
+    public void returnARequestBuilderInstanceForPut(){
+        assertNotNull(client.doPrepare(HttpMethod.PUT, url));
+    }
+
+    @Test
+    public void returnARequestBuilderInstanceForDelete(){
+        assertNotNull(client.doPrepare(HttpMethod.DELETE, url));
+    }
+
+    @Test
+    public void whenPerformGetSuccessfullyReturnAValidWSResponse(){
+
+    }
+
 }
-
-/*
-    @Test
-    @Ignore
-    public void whenInterruptedExceptionHappensReturnsAnEmptyResponse() throws InterruptedException, ExecutionException, TimeoutException {
-        BoundRequestBuilder request = Mockito.mock(BoundRequestBuilder.class);
-        ListenableFuture<Response> futureResponseMock = Mockito.mock(FutureResponseMock.class);
-
-        when(request.execute()).thenReturn(futureResponseMock);
-
-        when(futureResponseMock.get(any(), any())).thenThrow(new InterruptedException());
-
-        WSResponse response = client.doCall(request);
-
-        assertEquals(null, response.getContent());
-        assertEquals(0, response.getCode());
-    }
-
-    @Test
-    @Ignore
-    public void whenExecutionTimeoutExceptionReturnsAnEmptyResponse() throws InterruptedException, ExecutionException, TimeoutException {
-        BoundRequestBuilder request = Mockito.mock(BoundRequestBuilder.class);
-        ListenableFuture<Response> futureResponseMock = Mockito.mock(FutureResponseMock.class);
-
-        when(request.execute()).thenReturn(futureResponseMock);
-
-        when(futureResponseMock.get(any(), any())).thenThrow(new TimeoutException());
-
-        WSResponse response = client.doCall(request);
-
-        assertEquals(null, response.getContent());
-        assertEquals(0, response.getCode());
-    }
-
-    @Test
-    public void whenDoGetIsSuccessfullReturnAValidWSResponse(){
-
-    }
-
-    @Test
-    public void prepareRightGetRequest(){
-        BoundRequestBuilder requestBuilder = client.doPrepare(HttpMethod.GET, url);
-        requestBuilder.
-
-    }
-
-    @Test
-    public void replaceIdInUrl(){
-        assertEquals(url + "1", client.encodedUrl(url + "{id}", 1L));
-    }
-
-*/
-
-
-/*    WSResponse doPerform(HttpMethod type, String url, User user);
-
-    WSResponse doGet(String url);
-
-    WSResponse doPost(String url, User user);
-
-    WSResponse doPut(String url, User user);
-
-    WSResponse doDelete(String url);*/
-
-
-
-/*    private BoundRequestBuilder doPrepare (HttpMethod type, String url){
-
-        if (ObjectUtils.equals(HttpMethod.GET, type)) {
-            return asyncHttpClient.prepareGet(url);
-        } else if (ObjectUtils.equals(HttpMethod.POST, type)) {
-            return asyncHttpClient.preparePost(url);
-        } else if (ObjectUtils.equals(HttpMethod.PUT, type)) {
-            return asyncHttpClient.preparePut(url);
-        } if (ObjectUtils.equals(HttpMethod.DELETE, type)) {
-            return asyncHttpClient.prepareDelete(url);
-        }
-
-        throw new RuntimeException("");
-    }
-}
-*/
