@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/fabianopaes/simscale-catalog-client.svg?branch=master)](https://travis-ci.org/fabianopaes/simscale-catalog-client)
+
 # SimScale-Catalog-Client
 
 ## Prerequisites
