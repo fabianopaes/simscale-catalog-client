@@ -156,11 +156,69 @@ public class LoadBalanceRoundRobinTest {
         List<JobRequest> requests = JobRequestGenerator
                 .build(new JobRequestGeneratorCustomConfig(0, 0, 0, 15));
 
-        when(client.doPerform(any(), any(), any())).thenReturn(new WSResponse("empty-content", 200));
+        when(client.doPerform(any(), any(), any())).thenReturn(WSResponse.ok());
 
         requests.parallelStream().forEachOrdered(request -> {
             WSResponse response = loadBalance.execute(request);
         });
+
+        verify(cb, times(requests.size())).onSuccess();
+    }
+
+
+    @Ignore
+    public void forEachIterationRelocateTheServerAtTheEndOfDeque(){
+
+        CircuitBreaker cb = Mockito.mock(CircuitBreaker.class);
+        when(cb.isCallable()).thenReturn(true);
+
+        Server[] serverArray = new Server[] {
+                new Server("http://localhost:8081", "server-a", cb),
+                new Server("http://localhost:8083", "server-b", cb),
+                new Server( "http://localhost:8082", "server-c",cb),
+                new Server("http://localhost:8084", "server-d", cb)
+        };
+
+        Deque<Server> servers = new ArrayDeque<Server>(Arrays.asList(serverArray));
+
+        LoadBalance loadBalance = getLBInstance(servers);
+        List<JobRequest> requests = JobRequestGenerator
+                .build(new JobRequestGeneratorCustomConfig(0, 0, 0, 15));
+
+        when(client.doPerform(any(), any(), any())).thenReturn(new WSResponse("empty-content", 20));
+
+        int index = 0;
+        int iteration = 1;
+
+        for(JobRequest request : requests){
+/*
+            WSResponse response = loadBalance.execute(request);
+            if(useOriginal){
+                verifyServerRelocate(servers, serverArray[index], serverArray[serverArray.length]);
+            }else {
+                verifyServerRelocate(servers, serverArray[index + 1], serverArray[index]);
+            }
+
+
+            if(ObjectUtils.equals(index, servers.size() - 1)){
+                index = 0;
+                useOriginal = true;
+            }else {
+                useOriginal = false;
+                index ++;
+            }*/
+
+            WSResponse response = loadBalance.execute(request);
+
+            verifyServerRelocate(servers, serverArray[index + 1], serverArray[index]);
+
+            index ++;
+            if(ObjectUtils.equals(index, servers.size() - 1)){
+                index = 0;
+                iteration ++;
+            }
+        }
+
 
         verify(cb, times(requests.size())).onSuccess();
     }

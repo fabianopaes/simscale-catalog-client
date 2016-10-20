@@ -16,6 +16,11 @@ public class WSResponse {
         return new WSResponse();
     }
 
+    public static WSResponse ok(){
+        return new WSResponse("", 200);
+    }
+
+
     public String getContent() {
         return content;
     }

@@ -12,6 +12,7 @@ import com.simscale.catalog.client.loadbalance.LoadBalanceAlgorithm;
 import com.simscale.catalog.client.loadbalance.LoadBalanceFactory;
 import com.simscale.catalog.client.loadbalance.LoadBalanceInfo;
 import com.simscale.catalog.client.service.ExecutionManager;
+import com.simscale.catalog.client.service.ExecutionManagerImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +85,7 @@ public class AppInitializer {
         );
 
         System.exit(1);
-        ExecutionManager executionManager = new ExecutionManager(
+        ExecutionManager executionManager = new ExecutionManagerImpl(
                 LoadBalanceFactory.getInstance(LoadBalanceAlgorithm.ROUND_ROBIN, info),
                 new JobFailureDummyHandler(), 1
         );

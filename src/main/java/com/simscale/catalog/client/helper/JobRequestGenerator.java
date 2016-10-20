@@ -74,7 +74,6 @@ public class JobRequestGenerator {
         }
 
         if(ObjectUtils.equals(method, HttpMethod.GET)){
-            //return User.empty();
             return null;
         }
 
