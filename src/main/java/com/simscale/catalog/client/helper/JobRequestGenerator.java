@@ -10,7 +10,7 @@ import java.util.List;
 
 public class JobRequestGenerator {
 
-    public static List<JobRequest> build(JobRequestGeneratorConfig params){
+    public static List<JobRequest> build(JobRequestGeneratorAbstractConfig params){
 
         List<JobRequest> jobRequests = new ArrayList<>();
         if(params.getPostRequests() > 0){

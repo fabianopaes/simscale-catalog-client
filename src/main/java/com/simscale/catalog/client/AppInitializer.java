@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simscale.catalog.client.domain.JobRequest;
 import com.simscale.catalog.client.domain.Server;
 import com.simscale.catalog.client.helper.JobRequestGenerator;
-import com.simscale.catalog.client.helper.JobRequestGeneratorConfig;
+import com.simscale.catalog.client.helper.JobRequestGeneratorDefaultConfig;
 import com.simscale.catalog.client.http.WSClientImpl;
 import com.simscale.catalog.client.loadbalance.JobFailureDummyHandler;
 import com.simscale.catalog.client.loadbalance.LoadBalanceAlgorithm;
@@ -57,7 +57,7 @@ public class AppInitializer {
 
         if (args.length < 2) {
             System.out.println("You have not provided the requests config. We will run some random requests");
-            jobRequests = JobRequestGenerator.build(new JobRequestGeneratorConfig());
+            jobRequests = JobRequestGenerator.build(new JobRequestGeneratorDefaultConfig());
         } else {
                 File requestsConfig = new File(args[1]);
                 if(!requestsConfig.exists()){

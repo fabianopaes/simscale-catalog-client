@@ -55,10 +55,10 @@ public class LoadBalanceRoundRobin implements LoadBalance{
 
         Server server = serverOptional.get();
 
-        System.out.println("");
+/*        System.out.println("");
         System.out.println(" ******************************************  ");
         System.out.println("Sending to " + server.getName());
-        System.out.println("Job " + jobRequest);
+        System.out.println("Job " + jobRequest);*/
         WSResponse response = client.doPerform(
                 jobRequest.getMethod(),
                 server.getEncondedUrl() + jobRequest.getEndpoint(),
@@ -73,7 +73,7 @@ public class LoadBalanceRoundRobin implements LoadBalance{
         }
 
         reallocatingServer(server);
-        System.out.println(" ******************************************  ");
+        /*System.out.println(" ******************************************  ");*/
         return response;
     }
 
