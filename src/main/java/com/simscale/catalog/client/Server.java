@@ -12,6 +12,11 @@ public class Server {
     private String name;
     private CircuitBreaker circuitBreaker;
 
+    public Server(){
+        // Using CircuitBreaker with the Default config
+        this.circuitBreaker = new CircuitBreakerCustom();
+    }
+
     public Server(String url, Integer port, String name, CircuitBreaker circuitBreaker) {
         this.url = url;
         this.port = port;

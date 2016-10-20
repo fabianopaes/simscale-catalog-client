@@ -6,23 +6,20 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultCircuitBreakerConfig implements CircuitBreakerConfig{
 
+    private final long timeToAllowRequests =
+            TimeUnit.SECONDS.toMillis(30);
+
+    private final int failureThreshold =
+             NumberUtils.INTEGER_ONE.intValue();
+
     @Override
     public long getTimeToAllowRequests() {
-        return TimeUnit.SECONDS.toMillis(30);
+        return timeToAllowRequests;
     }
 
     @Override
     public int getFailureThreshold() {
-        return NumberUtils.INTEGER_ONE.intValue();
+        return failureThreshold;
     }
 
-    @Override
-    public long getTimeOut() {
-        return 1000;
-    }
-
-    @Override
-    public int getRetryInterval() {
-        return 0;
-    }
 }

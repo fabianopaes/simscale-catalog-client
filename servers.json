@@ -1,0 +1,17 @@
+[
+  {
+    "url" : "http://localhost",
+    "port" : 9001,
+    "name" : "ServerTest-1"
+  },
+  {
+    "url" : "http://localhost",
+    "port" : 9002,
+    "name" : "ServerTest-2"
+  },
+  {
+    "url" : "http://localhost",
+    "port" : 9003,
+    "name" : "ServerTest-3"
+  }
+]

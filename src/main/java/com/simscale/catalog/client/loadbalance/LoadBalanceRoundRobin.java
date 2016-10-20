@@ -1,6 +1,6 @@
 package com.simscale.catalog.client.loadbalance;
 
-import com.simscale.catalog.client.Job;
+import com.simscale.catalog.client.JobRequest;
 import com.simscale.catalog.client.Server;
 import com.simscale.catalog.client.http.WSClient;
 import com.simscale.catalog.client.http.WSResponse;
@@ -45,7 +45,7 @@ public class LoadBalanceRoundRobin implements LoadBalance{
     }
 
     @Override
-    public WSResponse execute(Job job) {
+    public WSResponse execute(JobRequest jobRequest) {
 
         Optional<Server> serverOptional = getAvailableServer();
 
@@ -55,21 +55,25 @@ public class LoadBalanceRoundRobin implements LoadBalance{
 
         Server server = serverOptional.get();
 
+        System.out.println("");
+        System.out.println(" ******************************************  ");
         System.out.println("Sending to " + server.getName());
+        System.out.println("Job " + jobRequest);
         WSResponse response = client.doPerform(
-                job.getMethod().name(),
-                server.getEncondedUrl() + job.getEndpoint(),
-                job.getUser()
+                jobRequest.getMethod(),
+                server.getEncondedUrl() + jobRequest.getEndpoint(),
+                jobRequest.getUser()
         );
 
-        if (response.isOkay()) {
+        if (response.isServerResponding()) {
             server.getCircuitBreaker().onSuccess();
         } else {
+            System.out.println("Error on server " + server.getName() + ". Response: " + response);
             server.getCircuitBreaker().onFailure();
         }
 
         reallocatingServer(server);
-
+        System.out.println(" ******************************************  ");
         return response;
     }
 

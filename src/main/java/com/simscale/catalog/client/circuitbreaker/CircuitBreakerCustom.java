@@ -106,7 +106,9 @@ public class CircuitBreakerCustom implements CircuitBreaker {
 
     private boolean canBeClosed(){
         Long now = System.currentTimeMillis();
+/*
         System.out.println("Diff: " + String.valueOf(now  - lastOpenTimestamp) + " config to halfopen: " + config.getTimeToAllowRequests());
+*/
         return now  - lastOpenTimestamp >= config.getTimeToAllowRequests();
     }
 

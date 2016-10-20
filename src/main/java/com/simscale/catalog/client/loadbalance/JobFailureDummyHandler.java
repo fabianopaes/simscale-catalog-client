@@ -1,11 +1,11 @@
 package com.simscale.catalog.client.loadbalance;
 
-import com.simscale.catalog.client.Job;
+import com.simscale.catalog.client.JobRequest;
 
 public class JobFailureDummyHandler implements JobFailureHandler {
 
     @Override
-    public void process(Job job) {
+    public void process(JobRequest jobRequest) {
         // do nothing yet
 
     }

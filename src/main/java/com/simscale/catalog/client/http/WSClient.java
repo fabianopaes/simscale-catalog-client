@@ -4,7 +4,7 @@ import com.simscale.catalog.client.domain.User;
 
 public interface WSClient {
 
-    WSResponse doPerform(String type, String url, User user);
+    WSResponse doPerform(HttpMethod type, String url, User user);
 
     WSResponse doGet(String url);
 

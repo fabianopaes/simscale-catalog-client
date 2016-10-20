@@ -1,14 +1,20 @@
 package com.simscale.catalog.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.simscale.catalog.client.domain.User;
-import io.netty.handler.codec.http.HttpMethod;
+import com.simscale.catalog.client.http.HttpMethod;
 
-public class JobRequest {
+import java.io.Serializable;
+
+public class JobRequest implements Serializable {
 
     private String endpoint;
     private HttpMethod method;
     private User user;
     private int executionCount;
+
+    public JobRequest(){}
 
     public JobRequest(String endpoint, HttpMethod method, User user) {
         this.endpoint = endpoint;

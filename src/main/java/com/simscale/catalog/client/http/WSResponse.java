@@ -32,8 +32,8 @@ public class WSResponse {
         this.code = code;
     }
 
-    public boolean isOkay(){
-        return getCode() >= 200 && getCode() <= 299;
+    public boolean isServerResponding(){
+            return getCode() > 0 &&  getCode() < 500;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class WSResponse {
         return "WSResponse{" +
                 "content='" + content + '\'' +
                 ", code=" + code +
-                ", isOkay=" + isOkay() +
+                ", isServerResponding=" + isServerResponding() +
                 '}';
     }
 }

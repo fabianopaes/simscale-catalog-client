@@ -1,5 +1,7 @@
 package com.simscale.catalog.client.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class User {
 
     private Long id;
@@ -14,6 +16,12 @@ public class User {
 
     public User(Long id, String username, String firstName, String lastName) {
         this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public User(String username, String firstName, String lastName) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -50,6 +58,10 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public static User empty(){
+        return new User();
     }
 
     @Override

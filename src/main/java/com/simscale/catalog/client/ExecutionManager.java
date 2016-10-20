@@ -8,6 +8,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ExecutionManager {
 
@@ -15,61 +16,86 @@ public class ExecutionManager {
 
     private JobFailureHandler failureHandler;
 
-    public ExecutionManager(LoadBalance loadBalance, JobFailureHandler failureHandler) {
+    private Integer durationMinutes;
+
+    public ExecutionManager(LoadBalance loadBalance, JobFailureHandler failureHandler, Integer durationMinutes) {
         this.loadBalance = loadBalance;
         this.failureHandler = failureHandler;
+        this.durationMinutes = durationMinutes;
     }
 
-    public void run(List<Job> jobs){
-        execute(new ArrayDeque<>(jobs));
+    public enum ExecutionStatus{
+
+        OK,
+
+        RETRY,
+
+        SCHEDULE_RETRY;
+
+    }
+
+    public void run(List<JobRequest> jobRequests){
+
+        long begin = System.currentTimeMillis();
+        long shouldEndAt = begin + getDurationInMillis();
+
+        while(System.currentTimeMillis() < shouldEndAt){
+            execute(new ArrayDeque<>(jobRequests));
+        }
+
         loadBalance.prettyPrintExecutionMetrics();
+
     }
 
-    private void execute(Deque<Job> jobs){
+    private long getDurationInMillis(){
+        return TimeUnit.MINUTES.toMillis(durationMinutes);
+    }
 
-        while(! jobs.isEmpty()){
+    private void execute(Deque<JobRequest> jobRequests){
 
-            Job singleJob = jobs.iterator().next();
+        while(! jobRequests.isEmpty()){
+
+            JobRequest singleJobRequest = jobRequests.iterator().next();
             try{
 
-                ExecutionStatus status =  singleExecution(singleJob);
-                jobs.remove(singleJob);
+                ExecutionStatus status =  singleExecution(singleJobRequest);
+                jobRequests.remove(singleJobRequest);
 
                 if(ObjectUtils.equals(status, ExecutionStatus.RETRY)) {
-                    jobs.addLast(singleJob);
+                    jobRequests.addLast(singleJobRequest);
                 }
 
                 if(ObjectUtils.equals(status, ExecutionStatus.SCHEDULE_RETRY)) {
-                    failureHandler.process(singleJob);
+                    failureHandler.process(singleJobRequest);
                 }
 
             }catch (Exception ex){
                 System.out.println("Something unknown went wrong, we will save to process it later");
-                jobs.remove(singleJob);
-                failureHandler.process(singleJob);
+                jobRequests.remove(singleJobRequest);
+                failureHandler.process(singleJobRequest);
                 ex.printStackTrace();
             }
         }
     }
 
-    private ExecutionStatus singleExecution(Job job){
+    private ExecutionStatus singleExecution(JobRequest jobRequest){
 
-        if( ! job.isOverRetryLimit()){
+        if( ! jobRequest.isOverRetryLimit()){
 
-            WSResponse response = loadBalance.execute(job);
+            WSResponse response = loadBalance.execute(jobRequest);
 
-            if (response.isOkay()) {
-                System.out.println(response);
+            if (response.isServerResponding()) {
+                //System.out.println(response);
                 return ExecutionStatus.OK;
             } else {
                 System.out.println("Something went wrong, we will process it later over again");
-                job.increaseExecutionCount();
+                jobRequest.increaseExecutionCount();
                 return ExecutionStatus.RETRY;
             }
 
         } else {
-            System.out.println("We have tried to process this job more than the limit  ... " + job.toString());
-            System.out.println("Saving to process it later... " + job.toString());
+            System.out.println("We have tried to process this jobRequest more than the limit  ... " + jobRequest.toString());
+            System.out.println("Saving to process it later... " + jobRequest.toString());
             return ExecutionStatus.SCHEDULE_RETRY;
         }
     }

@@ -1,15 +1,15 @@
 package com.simscale.catalog.client.loadbalance;
 
-import com.simscale.catalog.client.Job;
+import com.simscale.catalog.client.JobRequest;
 
 public interface JobFailureHandler {
 
     /**
      * This method should be used to inject some logic to handle
      * jobs that we could not be able to process properly
-     * So, we can send this job to a SQS, Redis, MongoDB or other
+     * So, we can send this jobRequest to a SQS, Redis, MongoDB or other
      *
-     * @param job The job we will process later
+     * @param jobRequest The jobRequest we will process later
      */
-    public void process(Job job);
+    public void process(JobRequest jobRequest);
 }

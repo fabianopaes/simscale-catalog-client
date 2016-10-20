@@ -1,91 +1,93 @@
 package com.simscale.catalog.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simscale.catalog.client.http.WSClientImpl;
 import com.simscale.catalog.client.loadbalance.JobFailureDummyHandler;
 import com.simscale.catalog.client.loadbalance.LoadBalanceAlgorithm;
 import com.simscale.catalog.client.loadbalance.LoadBalanceFactory;
 import com.simscale.catalog.client.loadbalance.LoadBalanceInfo;
-import io.netty.handler.codec.http.HttpMethod;
-import org.apache.commons.lang3.math.NumberUtils;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class AppInitializer {
 
+    public static void main(String[] args) {
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+        args = new String[]{
+                "/home/fabiano/src/simscale/simscale-catalog-client/servers.json",
+                "/home/fabiano/src/simscale/simscale-catalog-client/requests.json"
+        };
 
-        // Here comes all servers that we have
-        List<Server> servers = Arrays.asList(
-                new Server("http://localhost", 9000,  "GED"),
-                new Server("http://localhost", 9001,  "Patient-Data"),
-                new Server("http://localhost",  9002, "Report")
+        if(args.length == 0){
+            System.out.println("You have to provider at least the servers config path and as a plus the requests " +
+                    "config that we will make");
+            System.exit(1);
+        }
+
+        if (!args[0].endsWith(".json")) {
+                System.out.println("servers.config should be a json file. Received " + args[0]);
+                System.exit(1);
+        }
+
+        File serversConfig = new File(args[0]);
+        if(!serversConfig.exists()){
+                System.out.println("The servers.config path does not exists in your owm machine");
+                System.exit(1);
+        }
+
+        ObjectMapper mapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        List<Server> servers = new ArrayList<>();
+        try{
+            servers = Arrays.asList(mapper.readValue(serversConfig, Server[].class));
+        }catch(IOException ex){
+            System.out.println("Your server config file is wrong. Please take a look at servers.json at root " +
+                    "of the project as example");
+            System.exit(1);
+        }
+
+        List<JobRequest> jobRequests = new ArrayList<>();
+
+        if (args.length < 2) {
+            System.out.println("You have not provided the requests config. We will run some random requests");
+            jobRequests = JobRequestGenerator.build(new JobRequestGeneratorConfig());
+        } else {
+                File requestsConfig = new File(args[1]);
+                if(!requestsConfig.exists()){
+                        System.out.println("The requests.config path does not exists in your owm machine");
+                        System.exit(1);
+                }
+
+                if (!args[1].endsWith(".json")) {
+                    System.out.println("requests.config should be a json file. Received " + args[1]);
+                    System.exit(1);
+                }
+                try{
+                    jobRequests = Arrays.asList(mapper.readValue(serversConfig, JobRequest[].class));
+                }catch(IOException ex){
+                    System.out.println("Your requests config file is wrong. Please take a look at requests.json at root " +
+                            "of the project as example");
+                    System.exit(1);
+                }
+        }
+
+        LoadBalanceInfo info = new LoadBalanceInfo(
+                new ArrayDeque<>(servers),
+                new WSClientImpl()
         );
 
-        // Here comes our jobs that we have to balance between our servers
-        List<Job> jobs = Arrays.asList(
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null),
-                new Job("/v1/ping",HttpMethod.GET, null)
+        System.exit(1);
+        ExecutionManager executionManager = new ExecutionManager(
+                LoadBalanceFactory.getInstance(LoadBalanceAlgorithm.ROUND_ROBIN, info),
+                new JobFailureDummyHandler(), 1
         );
 
-
-       LoadBalanceInfo info = new LoadBalanceInfo(
-               new ArrayDeque<>(servers),
-               new WSClientImpl()
-       );
-
-       ExecutionManager executionManager = new ExecutionManager(
-               LoadBalanceFactory.getInstance(LoadBalanceAlgorithm.ROUND_ROBIN, info),
-               new JobFailureDummyHandler()
-       );
-
-        executionManager.run(jobs);
-
-
-        System.exit(NumberUtils.INTEGER_ZERO);
-
+        executionManager.run(jobRequests);
     }
 
-
-
 }
+
+
+

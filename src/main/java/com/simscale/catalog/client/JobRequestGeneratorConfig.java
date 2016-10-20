@@ -1,14 +1,14 @@
 package com.simscale.catalog.client;
 
-public class JobRequestBuilderConfig {
+public class JobRequestGeneratorConfig {
 
-    private final int postRequests = 5;
+    private final int postRequests = 300;
 
-    private final int putRequests = 5;
+    private final int putRequests = 300;
 
-    private final int deleleteRequests = 5;
+    private final int deleteRequests = 300;
 
-    private final int getRequests = 5;
+    private final int getRequests = 300;
 
     private final String postEndpoint =
             "/v1/users";
@@ -28,8 +28,8 @@ public class JobRequestBuilderConfig {
         return putRequests;
     }
 
-    public int getDeleleteRequests() {
-        return deleleteRequests;
+    public int getDeleteRequests() {
+        return deleteRequests;
     }
 
     public int getGetRequests() {
