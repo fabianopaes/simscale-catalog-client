@@ -166,6 +166,8 @@ public class LoadBalanceRoundRobinTest {
     }
 
 
+
+
     @Ignore
     public void forEachIterationRelocateTheServerAtTheEndOfDeque(){
 
@@ -221,6 +223,30 @@ public class LoadBalanceRoundRobinTest {
 
 
         verify(cb, times(requests.size())).onSuccess();
+    }
+
+    @Test
+    public void whenTheresNoAvailableServerReturnsWSResponselEmpty(){
+        CircuitBreaker cb = Mockito.mock(CircuitBreaker.class);
+        Deque<Server> servers = new ArrayDeque<Server>(Arrays.asList(
+                new Server("http://localhost:8081", "server-1", cb),
+                new Server("http://localhost:8082", "server-2", cb),
+                new Server("http://localhost:8083", "server-3", cb),
+                new Server( "http://localhost:8084", "server-4",cb)
+        ));
+
+        LoadBalance loadBalance = getLBInstance(servers);
+        when(cb.isCallable()).thenReturn(false);
+
+        List<JobRequest> requests = JobRequestGenerator
+                .build(new JobRequestGeneratorCustomConfig(0, 0, 0, 10));
+
+        requests.parallelStream().forEach( request ->{
+            assertEquals(WSResponse.empty().getCode(), loadBalance.execute(request).getCode());
+            assertEquals(WSResponse.empty().getContent(), loadBalance.execute(request).getContent());
+        });
+
+
     }
 
     private void verifyServerRelocate(Deque<Server> servers, Server shouldBeFirst, Server shouldBeLast){
