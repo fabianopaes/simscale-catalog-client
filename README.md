@@ -1,13 +1,35 @@
-# simscale-catalog-client
+# SimScale-Catalog-Client
 
-You might have a Java 8 and Gradle properly installed in your own machine to build/run this project.
+## Prerequisites
 
-Other way to run is just to execute the follow commands:
+You will need the following things properly installed on your own machine.
 
+* [Java 8](https://www.java.com)
+
+## Installation
+
+Used [Gradle](http://www.gradle.org), a cross-platform build automation tool.
+If you prefer [install Gradle](http://www.gradle.org/installation) or use a [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) inside this project.
+
+* `git clone git@github.com:fabianopaes/simscale-catalog-client.git` this repository
+* change into the new directory `simscale-catalog-client`
+
+### Build project
+
+```
 chmod +x gradlew
+```
 
-./gradlew build
+```
+./gradlew clean build
+```
 
-The second one will build and generate a jar file and then, just type ...
+```
+./gradlew run
+```
 
+Other way to run this project is just execute a jar after build the project. Use the follow command:
+
+```
 java -jar build/libs/simscale-catalog-client-1.0.0.jar
+```
