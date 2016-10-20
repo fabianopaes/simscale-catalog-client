@@ -12,6 +12,7 @@ import com.simscale.catalog.client.loadbalance.LoadBalanceFactory;
 import com.simscale.catalog.client.loadbalance.LoadBalanceInfo;
 import com.simscale.catalog.client.service.ExecutionManager;
 import com.simscale.catalog.client.service.ExecutionManagerImpl;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,6 @@ import java.util.*;
 public class AppInitializer {
 
     public static void main(String[] args) {
-
         if(args.length == 0){
             System.out.println("You have to provider at least the servers config path and as a plus the requests " +
                     "config that we will make");
@@ -41,7 +41,7 @@ public class AppInitializer {
         ObjectMapper mapper = new ObjectMapper();
         List<Server> servers = new ArrayList<>();
         try{
-            servers = Arrays.asList(mapper.readValue(serversConfig, Server[].class));
+            servers = Arrays.asList(mapper.readValue(FileUtils.readFileToString(serversConfig), Server[].class));
         }catch(IOException ex){
             System.out.println("Your server config file is wrong. Please take a look at servers.json at root " +
                     "of the project as example");
@@ -54,24 +54,32 @@ public class AppInitializer {
             System.out.println("You have not provided the requests config. We will run some random requests");
             jobRequests = JobRequestGenerator.build(new JobRequestGeneratorDefaultConfig());
         } else {
-                File requestsConfig = new File(args[1]);
-                if(!requestsConfig.exists()){
-                        System.out.println("The requests.config path does not exists in your owm machine");
-                        System.exit(1);
-                }
+                File requestConfigJson = new File(args[1]);
 
                 if (!args[1].endsWith(".json")) {
                     System.out.println("requests.config should be a json file. Received " + args[1]);
                     System.exit(1);
                 }
+
+                if(!requestConfigJson.exists()){
+                        System.out.println("The requests.config path does not exists in your owm machine");
+                        System.exit(1);
+                }
+
                 try{
-                    jobRequests = Arrays.asList(mapper.readValue(serversConfig, JobRequest[].class));
+                    jobRequests = Arrays.asList(mapper.readValue(
+                            FileUtils.readFileToString(requestConfigJson), JobRequest[].class)
+                    );
+
                 }catch(IOException ex){
+                    ex.printStackTrace();
                     System.out.println("Your requests config file is wrong. Please take a look at requests.json at root " +
                             "of the project as example");
                     System.exit(1);
                 }
         }
+
+        System.exit(1);
 
         LoadBalanceInfo info = new LoadBalanceInfo(
                 new ArrayDeque<>(servers),

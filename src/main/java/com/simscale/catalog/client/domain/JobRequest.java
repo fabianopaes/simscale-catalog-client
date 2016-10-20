@@ -2,9 +2,7 @@ package com.simscale.catalog.client.domain;
 
 import com.simscale.catalog.client.http.HttpMethod;
 
-import java.io.Serializable;
-
-public class JobRequest implements Serializable {
+public class JobRequest {
 
     private String endpoint;
     private HttpMethod method;
