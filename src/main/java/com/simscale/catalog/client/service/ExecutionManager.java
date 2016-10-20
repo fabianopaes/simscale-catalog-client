@@ -1,5 +1,6 @@
-package com.simscale.catalog.client;
+package com.simscale.catalog.client.service;
 
+import com.simscale.catalog.client.domain.JobRequest;
 import com.simscale.catalog.client.http.WSResponse;
 import com.simscale.catalog.client.loadbalance.JobFailureHandler;
 import com.simscale.catalog.client.loadbalance.LoadBalance;

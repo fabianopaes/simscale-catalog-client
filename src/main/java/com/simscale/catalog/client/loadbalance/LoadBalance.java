@@ -1,7 +1,7 @@
 package com.simscale.catalog.client.loadbalance;
 
-import com.simscale.catalog.client.JobRequest;
-import com.simscale.catalog.client.Server;
+import com.simscale.catalog.client.domain.JobRequest;
+import com.simscale.catalog.client.domain.Server;
 import com.simscale.catalog.client.http.WSResponse;
 
 import java.util.Optional;

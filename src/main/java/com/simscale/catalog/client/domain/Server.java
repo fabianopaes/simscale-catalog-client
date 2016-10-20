@@ -1,4 +1,4 @@
-package com.simscale.catalog.client;
+package com.simscale.catalog.client.domain;
 
 import static java.util.Objects.isNull;
 

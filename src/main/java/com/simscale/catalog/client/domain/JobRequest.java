@@ -1,8 +1,5 @@
-package com.simscale.catalog.client;
+package com.simscale.catalog.client.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.simscale.catalog.client.domain.User;
 import com.simscale.catalog.client.http.HttpMethod;
 
 import java.io.Serializable;

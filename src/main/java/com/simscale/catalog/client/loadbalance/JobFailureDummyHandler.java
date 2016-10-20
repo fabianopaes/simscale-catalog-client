@@ -1,6 +1,6 @@
 package com.simscale.catalog.client.loadbalance;
 
-import com.simscale.catalog.client.JobRequest;
+import com.simscale.catalog.client.domain.JobRequest;
 
 public class JobFailureDummyHandler implements JobFailureHandler {
 

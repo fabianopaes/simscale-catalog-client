@@ -1,4 +1,4 @@
-package com.simscale.catalog.client;
+package com.simscale.catalog.client.helper;
 
 public class JobRequestGeneratorConfig {
 

@@ -1,6 +1,6 @@
 package com.simscale.catalog.client.loadbalance;
 
-import com.simscale.catalog.client.Server;
+import com.simscale.catalog.client.domain.Server;
 import com.simscale.catalog.client.http.WSClient;
 
 import java.util.Deque;

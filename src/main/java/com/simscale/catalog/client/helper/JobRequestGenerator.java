@@ -1,5 +1,6 @@
-package com.simscale.catalog.client;
+package com.simscale.catalog.client.helper;
 
+import com.simscale.catalog.client.domain.JobRequest;
 import com.simscale.catalog.client.domain.User;
 import com.simscale.catalog.client.http.HttpMethod;
 import org.apache.commons.lang3.ObjectUtils;
