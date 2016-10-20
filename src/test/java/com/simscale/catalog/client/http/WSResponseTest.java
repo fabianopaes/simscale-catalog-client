@@ -1,6 +1,5 @@
-package com.simscale.catalog.catalog.http;
+package com.simscale.catalog.client.http;
 
-import com.simscale.catalog.client.http.WSResponse;
 import org.junit.Before;
 import org.junit.Test;
 

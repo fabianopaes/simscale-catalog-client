@@ -1,4 +1,4 @@
-package com.simscale.catalog.catalog.loadbalance;
+package com.simscale.catalog.client.loadbalance;
 
 import com.simscale.catalog.client.circuitbreaker.CircuitBreaker;
 import com.simscale.catalog.client.domain.JobRequest;
@@ -7,9 +7,6 @@ import com.simscale.catalog.client.helper.JobRequestGenerator;
 import com.simscale.catalog.client.helper.JobRequestGeneratorCustomConfig;
 import com.simscale.catalog.client.http.WSClient;
 import com.simscale.catalog.client.http.WSResponse;
-import com.simscale.catalog.client.loadbalance.LoadBalance;
-import com.simscale.catalog.client.loadbalance.LoadBalanceInfo;
-import com.simscale.catalog.client.loadbalance.LoadBalanceRoundRobin;
 import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Before;
 import org.junit.Ignore;

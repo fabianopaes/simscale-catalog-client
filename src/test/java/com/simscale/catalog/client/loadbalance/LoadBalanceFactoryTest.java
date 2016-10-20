@@ -1,7 +1,6 @@
-package com.simscale.catalog.catalog.loadbalance;
+package com.simscale.catalog.client.loadbalance;
 
 import com.simscale.catalog.client.http.WSClient;
-import com.simscale.catalog.client.loadbalance.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;

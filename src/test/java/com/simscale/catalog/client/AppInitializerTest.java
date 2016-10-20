@@ -1,4 +1,4 @@
-package com.simscale.catalog.catalog;
+package com.simscale.catalog.client;
 
 public class AppInitializerTest {
 

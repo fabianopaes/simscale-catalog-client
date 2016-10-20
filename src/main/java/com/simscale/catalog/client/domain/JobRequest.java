@@ -51,6 +51,8 @@ public class JobRequest implements Serializable {
         return executionCount;
     }
 
+    public void setExecutionCount(int executionCount){this.executionCount = executionCount;}
+
     public boolean isOverRetryLimit(){
         return executionCount > 10;
     }

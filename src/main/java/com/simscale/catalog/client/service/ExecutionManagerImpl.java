@@ -41,11 +41,11 @@ public class ExecutionManagerImpl implements ExecutionManager{
         loadBalance.prettyPrintExecutionMetrics();
     }
 
-    private long getDurationInMillis(){
+    public long getDurationInMillis(){
         return TimeUnit.MINUTES.toMillis(durationMinutes);
     }
 
-    private void execute(Deque<JobRequest> jobRequests){
+    public void execute(Deque<JobRequest> jobRequests){
 
         while(! jobRequests.isEmpty()){
 
@@ -72,7 +72,7 @@ public class ExecutionManagerImpl implements ExecutionManager{
         }
     }
 
-    private ExecutionStatus singleExecution(JobRequest jobRequest){
+    public ExecutionStatus singleExecution(JobRequest jobRequest){
 
         if( ! jobRequest.isOverRetryLimit()){
 

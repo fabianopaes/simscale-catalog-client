@@ -83,7 +83,7 @@ public class WSClientImpl implements WSClient{
         return this.doCall(wsRequest);
     }
 
-    private WSResponse doCall (BoundRequestBuilder wsRequest) {
+    public WSResponse doCall (BoundRequestBuilder wsRequest) {
         Future<Response> future = wsRequest.execute();
         WSResponse wsResponse = new WSResponse();
         try{
@@ -98,7 +98,7 @@ public class WSClientImpl implements WSClient{
     }
 
 
-    private BoundRequestBuilder doPrepare (HttpMethod type, String url){
+    public BoundRequestBuilder doPrepare (HttpMethod type, String url){
 
         if (ObjectUtils.equals(HttpMethod.GET, type)) {
             return asyncHttpClient.prepareGet(url);
@@ -113,7 +113,7 @@ public class WSClientImpl implements WSClient{
         throw new RuntimeException("");
    }
 
-    private String encodedUrl(String url, Long id){
+    public String encodedUrl(String url, Long id){
         return url.replace("{id}", String.valueOf(id));
     }
 

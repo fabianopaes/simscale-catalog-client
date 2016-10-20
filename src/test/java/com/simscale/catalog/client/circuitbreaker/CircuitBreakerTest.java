@@ -1,6 +1,5 @@
-package com.simscale.catalog.catalog.circuitbreaker;
+package com.simscale.catalog.client.circuitbreaker;
 
-import com.simscale.catalog.client.circuitbreaker.*;
 import org.junit.Before;
 import org.junit.Test;
 

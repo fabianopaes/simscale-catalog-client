@@ -1,8 +1,5 @@
-package com.simscale.catalog.catalog.circuitbreaker;
+package com.simscale.catalog.client.circuitbreaker;
 
-import com.simscale.catalog.client.circuitbreaker.CircuitBreakerConfig;
-import com.simscale.catalog.client.circuitbreaker.CircuitBreakerCustomConfig;
-import com.simscale.catalog.client.circuitbreaker.DefaultCircuitBreakerConfig;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
