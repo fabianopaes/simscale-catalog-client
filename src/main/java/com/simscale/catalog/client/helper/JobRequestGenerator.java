@@ -73,10 +73,6 @@ public class JobRequestGenerator {
             return userBuildWithNoId(id);
         }
 
-        if(ObjectUtils.equals(method, HttpMethod.GET)){
-            return null;
-        }
-
         return JobRequestGenerator.userBuildWithId(id);
 
     }

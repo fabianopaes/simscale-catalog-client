@@ -33,6 +33,8 @@ public class WSClientImpl implements WSClient{
     @Override
     public WSResponse doPerform(HttpMethod type, String url, User user) {
 
+        System.out.println("... doPerform " + type + ": "+ user);
+
         if (ObjectUtils.equals(HttpMethod.GET, type)) {
             return this.doGet(encodedUrl(url, user.getId()));
         } else if (ObjectUtils.equals(HttpMethod.POST, type)) {
@@ -88,9 +90,12 @@ public class WSClientImpl implements WSClient{
         Future<Response> future = wsRequest.execute();
         WSResponse wsResponse = new WSResponse();
         try{
-            Response response = future.get(2, TimeUnit.SECONDS);
+            Response response = future.get(1, TimeUnit.SECONDS);
             wsResponse.setCode(response.getStatusCode());
             wsResponse.setContent(response.getResponseBody());
+            System.out.println("Resposne Custom " + wsResponse);
+            System.out.println("Resposne " + response.getStatusText());
+            System.out.println("Resposne " + response.getResponseBody());
         }catch (InterruptedException | ExecutionException | TimeoutException e) {
             System.out.println(e.getLocalizedMessage());
             System.out.println(wsRequest);

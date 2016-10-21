@@ -49,6 +49,8 @@ public class ExecutionManagerImpl implements ExecutionManager{
 
         while(! jobRequests.isEmpty()){
 
+            long begin = System.currentTimeMillis();
+
             JobRequest singleJobRequest = jobRequests.iterator().next();
             try{
 
@@ -64,11 +66,19 @@ public class ExecutionManagerImpl implements ExecutionManager{
                 }
 
             }catch (Exception ex){
-                System.out.println("Something unknown went wrong, we will save to process it later");
+                System.out.println("Something unknown went wrong, we will save to process it later. " + ex.getLocalizedMessage());
                 jobRequests.remove(singleJobRequest);
                 failureHandler.process(singleJobRequest);
                 ex.printStackTrace();
             }
+
+            long end = System.currentTimeMillis();
+
+            System.out.println("Started at: " + begin + " Ended at: " + end +
+                    ". Time Execution " + TimeUnit.MILLISECONDS.toSeconds( end - begin) + "seconds, " +
+                    TimeUnit.MILLISECONDS.toMillis( end - begin) + " milli");
+
+            System.out.println("*************************");
         }
     }
 
@@ -82,7 +92,7 @@ public class ExecutionManagerImpl implements ExecutionManager{
                 //System.out.println(response);
                 return ExecutionStatus.OK;
             } else {
-                System.out.println("Something went wrong, we will process it later over again");
+                System.out.println("Something went wrong, we will process it later over again. " + ExecutionStatus.RETRY);
                 jobRequest.increaseExecutionCount();
                 return ExecutionStatus.RETRY;
             }

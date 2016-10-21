@@ -55,10 +55,8 @@ public class LoadBalanceRoundRobin implements LoadBalance{
 
         Server server = serverOptional.get();
 
-/*        System.out.println("");
-        System.out.println(" ******************************************  ");
-        System.out.println("Sending to " + server.getName());
-        System.out.println("Job " + jobRequest);*/
+        System.out.println("Using " + server.getName());
+
         WSResponse response = client.doPerform(
                 jobRequest.getMethod(),
                 server.getEncondedUrl() + jobRequest.getEndpoint(),
@@ -73,7 +71,6 @@ public class LoadBalanceRoundRobin implements LoadBalance{
         }
 
         reallocatingServer(server);
-        /*System.out.println(" ******************************************  ");*/
         return response;
     }
 
@@ -88,10 +85,13 @@ public class LoadBalanceRoundRobin implements LoadBalance{
         servers.parallelStream().forEachOrdered(server -> {
 
             System.out.println("");
-            System.out.println("Server: " + server.getName());
-            System.out.println("Server: " + server.getCircuitBreaker()
+            System.out.println("Server Name: " + server.getName());
+            System.out.println("Total Requests Success: " + server.getCircuitBreaker()
                     .getCircuitBreakerMetrics()
                     .getSuccessCount());
+            System.out.println("Total Requests Failure: " + server.getCircuitBreaker()
+                    .getCircuitBreakerMetrics()
+                    .getFailureCount());
 
         });
         System.out.println("****************************************");

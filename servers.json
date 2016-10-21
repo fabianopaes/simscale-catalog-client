@@ -1,17 +1,16 @@
 [
   {
-    "url" : "http://localhost",
-    "port" : 9001,
+    "url" : "http://ec2-52-59-255-196.eu-central-1.compute.amazonaws.com",
+    "port" : 9000,
     "name" : "ServerTest-1"
   },
   {
-    "url" : "http://localhost",
-    "port" : 9002,
+    "url" : "http://ec2-52-59-242-57.eu-central-1.compute.amazonaws.com",
+    "port" : 9000,
     "name" : "ServerTest-2"
   },
   {
     "url" : "http://localhost",
-    "port" : 9003,
     "name" : "ServerTest-3"
   }
 ]

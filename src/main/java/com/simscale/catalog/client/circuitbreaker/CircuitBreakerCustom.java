@@ -36,6 +36,7 @@ public class CircuitBreakerCustom implements CircuitBreaker {
 
         if (ObjectUtils.equals(CircuitBreakerState.OPEN, state) && canBeClosed()){
             state = CircuitBreakerState.HALF_OPEN;
+            resetFailureCount();
         }
 
         return state;
@@ -70,6 +71,7 @@ public class CircuitBreakerCustom implements CircuitBreaker {
     @Override
     public void onFailure() {
         increaseFailureCount();
+        metrics.increaseFailureCount();
         if(ObjectUtils.equals(failureCount, config.getFailureThreshold())){
             this.open();
         }
@@ -82,13 +84,12 @@ public class CircuitBreakerCustom implements CircuitBreaker {
 
     private void close(){
         setState(CircuitBreakerState.CLOSED);
-        setFailureCount(0);
+        resetFailureCount();
     }
 
 
     private void open(){
         setState(CircuitBreakerState.OPEN);
-        metrics.increaseFailureCount();
         lastOpenTimestamp = System.currentTimeMillis();
     }
 
@@ -104,11 +105,12 @@ public class CircuitBreakerCustom implements CircuitBreaker {
         this.failureCount++;
     }
 
+    private void resetFailureCount(){
+        setFailureCount(0);
+    }
+
     private boolean canBeClosed(){
         Long now = System.currentTimeMillis();
-/*
-        System.out.println("Diff: " + String.valueOf(now  - lastOpenTimestamp) + " config to halfopen: " + config.getTimeToAllowRequests());
-*/
         return now  - lastOpenTimestamp >= config.getTimeToAllowRequests();
     }
 
