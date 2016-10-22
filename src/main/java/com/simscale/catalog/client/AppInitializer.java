@@ -1,7 +1,5 @@
 package com.simscale.catalog.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.simscale.catalog.client.domain.JobRequest;
 import com.simscale.catalog.client.domain.Server;
 import com.simscale.catalog.client.helper.JobRequestGenerator;
 import com.simscale.catalog.client.helper.JobRequestGeneratorDefaultConfig;
@@ -12,88 +10,91 @@ import com.simscale.catalog.client.loadbalance.LoadBalanceFactory;
 import com.simscale.catalog.client.loadbalance.LoadBalanceInfo;
 import com.simscale.catalog.client.service.ExecutionManager;
 import com.simscale.catalog.client.service.ExecutionManagerImpl;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class AppInitializer {
 
     public static void main(String[] args) {
-        if(args.length == 0){
-            System.out.println("You have to provider at least the servers config path and as a plus the requests " +
-                    "config that we will make");
-            System.exit(1);
-        }
-
-        if (!args[0].endsWith(".json")) {
-                System.out.println("servers.config should be a json file. Received " + args[0]);
-                System.exit(1);
-        }
-
-        File serversConfig = new File(args[0]);
-        if(!serversConfig.exists()){
-                System.out.println("The servers.config path does not exists in your owm machine");
-                System.exit(1);
-        }
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<Server> servers = new ArrayList<>();
-        try{
-            servers = Arrays.asList(mapper.readValue(FileUtils.readFileToString(serversConfig), Server[].class));
-        }catch(IOException ex){
-            System.out.println("Your server config file is wrong. Please take a look at servers.json at root " +
-                    "of the project as example");
-            System.exit(1);
-        }
-
-        List<JobRequest> jobRequests = new ArrayList<>();
-
-        if (args.length < 2) {
-            System.out.println("You have not provided the requests config. We will run some random requests");
-            jobRequests = JobRequestGenerator.build(new JobRequestGeneratorDefaultConfig());
-        } else {
-                File requestConfigJson = new File(args[1]);
-
-                if (!args[1].endsWith(".json")) {
-                    System.out.println("requests.config should be a json file. Received " + args[1]);
-                    System.exit(1);
-                }
-
-                if(!requestConfigJson.exists()){
-                        System.out.println("The requests.config path does not exists in your owm machine");
-                        System.exit(1);
-                }
-
-                try{
-                    jobRequests = Arrays.asList(mapper.readValue(
-                            FileUtils.readFileToString(requestConfigJson), JobRequest[].class)
-                    );
-
-                }catch(IOException ex){
-                    ex.printStackTrace();
-                    System.out.println("Your requests config file is wrong. Please take a look at requests.json at root " +
-                            "of the project as example");
-                    System.exit(1);
-                }
-        }
-
-        System.exit(1);
 
         LoadBalanceInfo info = new LoadBalanceInfo(
-                new ArrayDeque<>(servers),
-                new WSClientImpl()
+                AppInitializer.readServers(), new WSClientImpl()
         );
 
         ExecutionManager executionManager = new ExecutionManagerImpl(
                 LoadBalanceFactory.getInstance(LoadBalanceAlgorithm.ROUND_ROBIN, info),
-                new JobFailureDummyHandler(), 1
+                new JobFailureDummyHandler(), AppInitializer.readExecutionTime()
         );
 
-        executionManager.run(jobRequests);
+        executionManager.run(JobRequestGenerator.build(new JobRequestGeneratorDefaultConfig()));
 
         executionManager.prettyPrintResults();
+
+        System.exit(1);
+    }
+
+    public static Deque<Server> readServers() {
+
+        System.out.println("");
+        System.out.println("Please provide a list of servers like the given example(<host> <port> <name>)");
+        System.out.println(" http://localhost 9000 server-1");
+        System.out.println(" If the server does not have a port, please enter 0");
+        System.out.println(" After entered all of servers, just type exit");
+        Boolean keepReading = true;
+
+        Scanner scanner = new Scanner(System.in);
+        Deque<Server> servers = new ArrayDeque<>();
+
+        while (keepReading) {
+
+            System.out.print("Enter the server : ");
+            String input = scanner.nextLine();
+
+            if ("exit".equalsIgnoreCase(input)) {
+
+                if(servers.isEmpty()){
+                    System.out.println("Stopping the program");
+                    System.exit(0);
+                }
+
+                keepReading = false;
+                System.out.println("As we already know all severs about to initialize the app");
+
+            } else{
+                String[] params = input.split(" ");
+                if(params.length != 3){
+                    System.out.println("Missing a parameter, remember <server> <port> <name>. Try it again");
+                } else {
+                    try{
+                        String host = params[0];
+                        String name = params[2];
+                        Integer port = Integer.valueOf(params[1]);
+                        servers.add(new Server(host, port, name));
+                    }catch(NumberFormatException ex){
+                        System.out.println("wrong value for port. Try it again");
+                    }
+                }
+            }
+        }
+
+        return servers;
+    }
+
+    public static Integer readExecutionTime(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.printf("");
+        System.out.print("Enter the time (in minute) which the application might be running: ");
+        Boolean keepReading = true;
+        Integer time = null;
+        while (keepReading) {
+            try{
+                String input = scanner.nextLine();
+                time = Integer.valueOf(input);
+                keepReading = false;
+            }catch(NumberFormatException ex){
+                System.out.println("wrong value for time. Try it again");
+            }
+        }
+        return time;
     }
 
 }

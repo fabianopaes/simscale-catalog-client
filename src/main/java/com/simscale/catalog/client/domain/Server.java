@@ -5,6 +5,8 @@ import static java.util.Objects.isNull;
 import com.simscale.catalog.client.circuitbreaker.CircuitBreaker;
 import com.simscale.catalog.client.circuitbreaker.CircuitBreakerCustom;
 
+import java.util.Objects;
+
 public class Server {
 
     private String url;
@@ -79,7 +81,7 @@ public class Server {
 
     public String getEncondedUrl(){
 
-        if(isNull(port)){
+        if(isNull(port) || Objects.equals(port, 0)){
             return url;
         }
 

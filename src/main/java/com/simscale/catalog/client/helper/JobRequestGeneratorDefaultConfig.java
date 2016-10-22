@@ -2,13 +2,13 @@ package com.simscale.catalog.client.helper;
 
 public class JobRequestGeneratorDefaultConfig extends JobRequestGeneratorAbstractConfig {
 
-    private final int postRequests = 300;
+    private final int postRequests = 3000;
 
-    private final int putRequests = 300;
+    private final int putRequests = 3000;
 
-    private final int deleteRequests = 300;
+    private final int deleteRequests = 3000;
 
-    private final int getRequests = 300;
+    private final int getRequests = 3000;
 
     @Override
     public int getPostRequests() {

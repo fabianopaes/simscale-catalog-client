@@ -1,6 +1,11 @@
 package com.simscale.catalog.client.circuitbreaker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CircuitBreakerCustomConfig implements CircuitBreakerConfig{
+
+    private final Logger logger = LoggerFactory.getLogger(CircuitBreakerCustomConfig.class);
 
     private final int failureThreshold;
 

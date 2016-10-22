@@ -1,8 +1,13 @@
 package com.simscale.catalog.client.circuitbreaker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CircuitBreakerMetrics {
+
+    private final Logger logger = LoggerFactory.getLogger(CircuitBreakerMetrics.class);
 
     private AtomicInteger successCount;
 

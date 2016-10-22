@@ -9,6 +9,8 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -20,6 +22,8 @@ public class WSClientImpl implements WSClient{
 
     private final AsyncHttpClient asyncHttpClient;
     private final ObjectMapper mapper;
+
+    private final Logger logger = LoggerFactory.getLogger(WSClientImpl.class);
 
     public WSClientImpl() {
         this.asyncHttpClient = new DefaultAsyncHttpClient(
@@ -33,7 +37,7 @@ public class WSClientImpl implements WSClient{
     @Override
     public WSResponse doPerform(HttpMethod type, String url, User user) {
 
-        System.out.println("... doPerform " + type + ": "+ user);
+        logger.debug("Calling doPerform for {} and User {}", type, user);
 
         if (ObjectUtils.equals(HttpMethod.GET, type)) {
             return this.doGet(encodedUrl(url, user.getId()));
@@ -62,6 +66,7 @@ public class WSClientImpl implements WSClient{
                     .setHeader("Content-Type", "application/json");
             return this.doCall(wsRequest);
         } catch (IOException e) {
+            logger.error("Error calling doPost", e);
             return WSResponse.empty();
         }
     }
@@ -75,7 +80,7 @@ public class WSClientImpl implements WSClient{
                     .setHeader("Content-Type", "application/json");
             return this.doCall(wsRequest);
         } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
+            logger.error("Error calling doPut", e);
             return WSResponse.empty();
         }
     }
@@ -93,12 +98,9 @@ public class WSClientImpl implements WSClient{
             Response response = future.get(1, TimeUnit.SECONDS);
             wsResponse.setCode(response.getStatusCode());
             wsResponse.setContent(response.getResponseBody());
-            System.out.println("Resposne Custom " + wsResponse);
-            System.out.println("Resposne " + response.getStatusText());
-            System.out.println("Resposne " + response.getResponseBody());
+            logger.info("Got response {}", wsResponse);
         }catch (InterruptedException | ExecutionException | TimeoutException e) {
-            System.out.println(e.getLocalizedMessage());
-            System.out.println(wsRequest);
+            logger.error("Error performing request: {}", wsRequest, e);
         }
         return wsResponse;
     }

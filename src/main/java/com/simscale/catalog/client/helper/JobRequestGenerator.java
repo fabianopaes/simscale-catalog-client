@@ -4,13 +4,19 @@ import com.simscale.catalog.client.domain.JobRequest;
 import com.simscale.catalog.client.domain.User;
 import com.simscale.catalog.client.http.HttpMethod;
 import org.apache.commons.lang3.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JobRequestGenerator {
 
+    private static Logger logger = LoggerFactory.getLogger(JobRequestGenerator.class);
+
     public static List<JobRequest> build(JobRequestGeneratorAbstractConfig params){
+
+        logger.debug("Generating job requests for config {}", params);
 
         List<JobRequest> jobRequests = new ArrayList<>();
         if(params.getPostRequests() > 0){

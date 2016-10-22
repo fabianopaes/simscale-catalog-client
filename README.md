@@ -18,6 +18,8 @@ If you prefer [install Gradle](http://www.gradle.org/installation) or use a [Gra
 
 ### Build project
 
+If you do not want to get Gradle installed (if you do not have yet), just run the follow commands
+
 ```
 chmod +x gradlew
 ```
@@ -30,9 +32,17 @@ chmod +x gradlew
 ./gradlew run
 ```
 
-Other way to run this project is just execute a jar after build the project. Use the follow command:
+However if you already have Gradle installed, just execute
 
 ```
-java -jar build/libs/simscale-catalog-client-1.0.0.jar /path/to/your/servers/configuration/file.json /path/to/your/requests/configuration/file.json
+gradle clean build
+```
+
+### Running the client application
+
+To run the simscale-catalog-client you have to execute the follow command ( and provide all configuration asked)...
+
+```
+java -jar build/libs/simscale-catalog-client-1.0.0.jar
 ```
 
